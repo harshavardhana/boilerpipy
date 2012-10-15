@@ -71,8 +71,8 @@ def normalize_spaces(s):
     return ' '.join(s.split())
 
 def _remove_crufty_html(content):
-    for replacement in lousy_regexes:
-        content = replacement.apply(content)
+    for processexps in lousy_regexps:
+        content = processexps.sub(content)
     return content
 
 def clean_attributes(html):

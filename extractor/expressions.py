@@ -19,31 +19,31 @@ REGEXPS = {
     'skipFootnoteLink': re.compile('^\s*(\[?[a-z0-9]{1,2}\]?|^|edit|citation needed)\s*$', re.I),
 }
 
-class Replacement(object):
-    def __init__(self, desc, regex, replacement):
+class Processexps():
+    def __init__(self, desc, regex, processexps):
         self.desc = desc
         self.regex = regex
-        self.replacement = replacement
+        self.processexps = processexps
 
-    def apply(self, content):
-        return self.regex.sub(self.replacement, content)
+    def sub(self, content):
+        return self.regex.sub(self.processexps, content)
 
-lousy_regexes = (
-    Replacement('javascript',
+lousy_regexps = (
+    Processexps('javascript',
                 regex=re.compile('<script.*?</script[^>]*>', re.DOTALL | re.IGNORECASE),
-                replacement=''),
+                processexps=''),
 
-    Replacement('double double-quoted attributes',
+    Processexps('double double-quoted attributes',
                 regex=re.compile('(="[^"]+")"+'),
-                replacement='\\1'),
+                processexps='\\1'),
 
-    Replacement('unclosed tags',
+    Processexps('unclosed tags',
                 regex = re.compile('(<[a-zA-Z]+[^>]*)(<[a-zA-Z]+[^<>]*>)'),
-                replacement='\\1>\\2'),
+                processexps='\\1>\\2'),
 
-    Replacement('unclosed (numerical) attribute values',
+    Processexps('unclosed (numerical) attribute values',
                 regex = re.compile('(<[^>]*[a-zA-Z]+\s*=\s*"[0-9]+)( [a-zA-Z]+="\w+"|/?>)'),
-                replacement='\\1"\\2'),
+                processexps='\\1"\\2'),
     )
 
 # strip out a set of nuisance html attributes that can mess up rendering in RSS feeds
