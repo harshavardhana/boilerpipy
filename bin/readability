@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 import sys
 import logging
+import urllib
+import chardet
+
+from optparse import OptionParser
 
 from extractor.main import Extractor
 from extractor.common import isValidhtml
 
 def main():
-    from optparse import OptionParser
     parser = OptionParser(usage="%prog: [options] [file]")
     parser.add_option('-u', '--url', help="use URL instead of a local file")
-    parser.add_option('-d', action="store_true", dest="debug")
+    parser.add_option('-d', help="enable debug", action="store_true", default=False, dest="debug")
     (options, args) = parser.parse_args()
 
     if not options.url:
@@ -20,20 +23,16 @@ def main():
     if options.debug:
         loglevel = logging.DEBUG
 
-    file = None
+    url = None
     if options.url:
         if not isValidhtml(options.url):
             print "Unrecognized URL, please provide a content-type of text/html"
             sys.exit(255)
-
-        import urllib
-        file = urllib.urlopen(options.url)
-    else:
-        file = open(args[0])
+        
+        url = urllib.urlopen(options.url)
     try:
-        content = file.read()
+        content = url.read()
         try:
-            import chardet
             enc = chardet.detect(content)['encoding']
             content = content.decode(enc)
         except:
@@ -45,7 +44,7 @@ def main():
         print "Error in printing the extracted html () %s" % err
 
     finally:
-        file.close()
+        url.close()
 
 if __name__ == '__main__':
     main()
