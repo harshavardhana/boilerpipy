@@ -38,11 +38,11 @@ def main():
             content = content.decode(enc)
         except:
             pass
-        out = Extractor(content, loglevel=loglevel).summary()
+        out = Extractor(content, loglevel=loglevel).extracted()
         print out.encode('utf-8','ignore')
 
     except Exception as err:
-        print "Error in printing the extractor summary() %s" % err
+        print "Error in printing the extracted html () %s" % err
 
     finally:
         file.close()
