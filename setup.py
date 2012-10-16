@@ -19,6 +19,6 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     packages=['extractor'],
-    scripts=['bin/relevance_extractor'],
+    scripts=['bin/readability'],
     requires=['lxml', 'beautifulsoup4', 'urlparse2'],
 )
