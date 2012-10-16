@@ -4,8 +4,8 @@
 import re
 
 REGEXPS = {
-    'unlikelyCandidates': re.compile('ad_wrapper|adwrapper|combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup|tweet|twitter|facebook|pinterest', re.I),
-    'okMaybeItsACandidate': re.compile('and|article|body|column|main|shadow', re.I),
+    'unlikelyNodes': re.compile('ad_wrapper|adwrapper|combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup|tweet|twitter|facebook|pinterest', re.I),
+    'okMaybeItsANode': re.compile('and|article|body|column|main|shadow', re.I),
     'positive': re.compile('article|body|content|entry|hentry|main|page|pagination|post|text|blog|story', re.I),
     'negative': re.compile('ad_wrapper|adwrapper|combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget|share|icon', re.I),
     'extraneous': re.compile('print|archive|comment|discuss|e[\-]?email|share|reply|all|login|sign|single', re.I),

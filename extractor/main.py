@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
 
-import logging
-logging.basicConfig()
 from collections import defaultdict
 import HTMLParser
 
@@ -14,8 +12,7 @@ from lxml.etree import tostring
 from expressions import *
 from common import *
 from error import *
-
-logger = logging.getLogger('extractor')
+from logger import Logger
 
 class Extractor:
 
@@ -24,11 +21,10 @@ class Extractor:
         self.options = defaultdict(lambda: None)
         for k, v in options.items():
             self.options[k] = v
-        self.notify = notify or logger.info
+        self.notify = notify or Logger.info
         self.html = None
         self.TEXT_LENGTH_THRESHOLD = 25
         self.RETRY_LENGTH = 250
-        logger.setLevel(level=self.options['loglevel'])
 
     def normalize_html(self, force=False):
         # Use lxml 'Cleaner' class to normalize html to a feasible value
@@ -55,7 +51,7 @@ class Extractor:
         try:
             single_pass = True
             while True:
-                self._html(True)
+                self.normalize_html(True)
                 [i.drop_tree() for i in self.tags(self.html, 'script', 'style', 'noscript')]
 
                 if single_pass:
@@ -70,11 +66,11 @@ class Extractor:
                 else:
                     if single_pass:
                         single_pass = False
-                        self.debug("Ended up stripping too much - going for a safer parsing scheme")
+                        Logger.log("Ended up stripping too much - going for a safer parsing scheme")
                         # try again
                         continue
                     else:
-                        logger.debug("Ruthless and simple parsing did not work. Returning unprocessed raw html")
+                        Logger.log("Ruthless and simple parsing did not work. Returning unprocessed raw html")
                         if self.html.find('body') is not None:
                             article = self.html.find('body')
                         else:
@@ -103,11 +99,11 @@ class Extractor:
                 else:
                     return cleaned_article
         except (StandardError, ParserError), e:
-            logger.exception('error getting summary: ' )
+            Logger.log('error getting summary: ', level="debug")
             return None
 
         except lxml.etree.XMLSyntaxError:
-            logger.exception('error getting summary: ' )
+            Logger.log('error getting summary: ', level="debug")
             return None
 
     def get_article(self, nodes, best_node):
@@ -141,15 +137,15 @@ class Extractor:
 
     def select_best_node(self, nodes):
         sorted_nodes = sorted(nodes.values(), key=lambda x: x['content_score'], reverse=True)
-        self.debug("Top 5 nodes:")
+        Logger.log("Top 5 nodes:", level="debug")
         for node in sorted_nodes[:5]:
             elem = node['elem']
-            self.debug("Node %s with score %s '%s...'" % (describe(elem), node['content_score'], snippet(elem)))
+            Logger.log("Node %s with score %s '%s...'" % (describe(elem), node['content_score'], snippet(elem)), level="debug")
 
         if len(sorted_nodes) == 0:
             return None
         best_node = sorted_nodes[0]
-        self.debug("Best node %s with score %s" % (describe(best_node['elem']), best_node['content_score']))
+        Logger.log("Best node %s with score %s" % (describe(best_node['elem']), best_node['content_score']), level="debug")
         return best_node
 
     def get_link_density(self, elem):
@@ -159,7 +155,7 @@ class Extractor:
 
     def score_paragraphs(self, min_text_length):
         nodes = {}
-        self.debug(str([describe(node) for node in self.tags(self.html, "div")]))
+        Logger.log(str([describe(node) for node in self.tags(self.html, "div")]), level="debug")
         elems = self.tags(self.html, "div", "p", "td", 'li', "a")
 
         for elem in elems:
@@ -196,10 +192,10 @@ class Extractor:
             link_density = self.get_link_density(elem)
             node['content_score'] *= (1 - link_density)
             if node['content_score'] > 0:
-                self.debug("node %s scored %s (linkd: %s) '%s'" % (describe(elem),
+                Logger.log("node %s scored %s (linkd: %s) '%s'" % (describe(elem),
                                                                         node['content_score'],
                                                                         link_density,
-                                                                        snippet(elem,30)))
+                                                                        snippet(elem,30)), level="debug")
 
         return nodes
 
@@ -234,16 +230,13 @@ class Extractor:
             content_score -= 5
         return { 'content_score': content_score, 'elem': elem }
 
-    def debug(self, *a):
-            logger.debug(*a)
-
     def remove_unlikely_nodes(self):
         remove_list = []
         context = iterwalk(self.html)
         for action, elem in context:
             s = "%s%s" % (elem.get('class', ''), elem.get('id', ''))
             if REGEXPS['unlikelyNodes'].search(s) and (not REGEXPS['okMaybeItsANode'].search(s)) and elem.tag != 'body':
-                self.debug("Removing unlikely node - %s" % (s,))
+                Logger.log("Removing unlikely node - %s" % (s,), level="debug")
                 remove_list.append(elem)
         [e.drop_tree() for e in remove_list if e.tag != 'html']
 
@@ -252,7 +245,7 @@ class Extractor:
             if elem.tag.lower() == "div":
                 # transform <div>s that do not contain other block elements into <p>s
                 if not REGEXPS['divToPElements'].search(unicode(''.join(map(tostring, list(elem))))):
-                    self.debug("Altering div(#%s.%s) to p" % (elem.get('id', ''), elem.get('class', '')))
+                    Logger.log("Altering div(#%s.%s) to p" % (elem.get('id', ''), elem.get('class', '')), level="debug")
                     elem.tag = "p"
 
     def tags(self, node, *tag_names):
@@ -281,8 +274,8 @@ class Extractor:
             tag = el.tag
             if weight + content_score < 0:
                 el.drop_tree()
-                self.debug("Conditionally cleaned %s with weight %s and content score %s because score + content score was less than zero." %
-                    (describe(el), weight, content_score))
+                Logger.log("Conditionally cleaned %s with weight %s and content score %s because score + content score was less than zero." %
+                    (describe(el), weight, content_score), level="debug")
             elif len(el.text_content().split(",")) < 10:
                 counts = {}
                 for kind in ['p', 'img', 'li', 'a', 'embed', 'input', 'iframe']:
@@ -336,9 +329,9 @@ class Extractor:
                     reason = "<iframe>s with too short a content length, or too many <iframe>s"
                     to_remove = True
                 if to_remove:
-                    self.debug("Conditionally cleaned %s#%s.%s with weight %s and content score %s because it has %s." %
-                               (el.tag, el.get('id',''), el.get('class', ''), weight, content_score, reason))
-                    self.debug("pname %s pweight %s" %(pname, pweight))
+                    Logger.log("Conditionally cleaned %s#%s.%s with weight %s and content score %s because it has %s." %
+                               (el.tag, el.get('id',''), el.get('class', ''), weight, content_score, reason), level="debug")
+                    Logger.log("pname %s pweight %s" %(pname, pweight), level="debug")
                     el.drop_tree()
         return tounicode(node)
 
