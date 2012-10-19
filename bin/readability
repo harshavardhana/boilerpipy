@@ -28,7 +28,7 @@ def main():
         if not isValidhtml(options.url):
             print "Unrecognized URL, please provide a content-type of text/html"
             sys.exit(255)
-        
+
         url = urllib.urlopen(options.url)
     try:
         content = url.read()

@@ -346,4 +346,3 @@ class Extractor:
                     logger.debug("pname %s pweight %s" %(pname, pweight))
                     el.drop_tree()
         return tounicode(node)
-

@@ -31,7 +31,7 @@ def create_doc(content, base_href):
 
 # Verify if the provided HTML has 'Content-Type' as HTML
 def isValidhtml(url):
-    
+
     if url is None:
         return False
 
