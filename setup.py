@@ -3,9 +3,9 @@ from distutils.core import setup
 version = '0.2beta'
 
 setup(
-    name='extractor',
+    name='boilerpipy',
     version=version,
-    description=('Readability extractor in Python'),
+    description=('Readability/Boilerpipe extractor in Python'),
     author='Harshavardhana',
     author_email='harsha@harshavardhana.net',
     url='https://github.com/harshavardhana/boilerpipy.git',
@@ -18,7 +18,7 @@ setup(
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    packages=['extractor'],
+    packages=['boilerpipy'],
     scripts=['bin/readability'],
     requires=['lxml', 'beautifulsoup4', 'urlparse2'],
 )
