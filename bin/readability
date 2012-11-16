@@ -6,7 +6,7 @@ import chardet
 
 from optparse import OptionParser
 
-from extractor.main import Extractor
+from extractor import Extractor
 from extractor.common import isValidhtml
 
 def main():
@@ -38,6 +38,8 @@ def main():
         except:
             pass
         out = Extractor(content, loglevel=loglevel).extracted()
+        if out is None:
+            raise
         print out.encode('utf-8','ignore')
 
     except Exception as err:

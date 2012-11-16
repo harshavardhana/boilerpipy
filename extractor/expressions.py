@@ -3,6 +3,7 @@
 
 import re
 
+## Regex stolen from Arc90's readability.js
 REGEXPS = {
     'unlikelyNodes': re.compile('ad_wrapper|adwrapper|combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup|tweet|twitter|facebook|pinterest', re.I),
     'okMaybeItsANode': re.compile('and|article|body|column|main|shadow', re.I),
@@ -19,7 +20,7 @@ REGEXPS = {
     'skipFootnoteLink': re.compile('^\s*(\[?[a-z0-9]{1,2}\]?|^|edit|citation needed)\s*$', re.I),
 }
 
-class Processexps():
+class Regexps():
     def __init__(self, desc, regex, processexps):
         self.desc = desc
         self.regex = regex
@@ -28,33 +29,34 @@ class Processexps():
     def sub(self, content):
         return self.regex.sub(self.processexps, content)
 
-lousy_regexps = (
-    Processexps('javascript',
-                regex=re.compile('<script.*?</script[^>]*>', re.DOTALL | re.IGNORECASE),
-                processexps=''),
+### Cruft in html from Arc90's readability.js
+crufty_regexps_html = (
+    Regexps('javascript',
+            regex=re.compile('<script.*?</script[^>]*>', re.DOTALL | re.IGNORECASE),
+            processexps=''),
 
-    Processexps('double double-quoted attributes',
-                regex=re.compile('(="[^"]+")"+'),
-                processexps='\\1'),
+    Regexps('double double-quoted attributes',
+            regex=re.compile('(="[^"]+")"+'),
+            processexps='\\1'),
 
-    Processexps('unclosed tags',
-                regex = re.compile('(<[a-zA-Z]+[^>]*)(<[a-zA-Z]+[^<>]*>)'),
-                processexps='\\1>\\2'),
+    Regexps('unclosed tags',
+            regex = re.compile('(<[a-zA-Z]+[^>]*)(<[a-zA-Z]+[^<>]*>)'),
+            processexps='\\1>\\2'),
 
-    Processexps('unclosed (numerical) attribute values',
-                regex = re.compile('(<[^>]*[a-zA-Z]+\s*=\s*"[0-9]+)( [a-zA-Z]+="\w+"|/?>)'),
-                processexps='\\1"\\2'),
+    Regexps('unclosed (numerical) attribute values',
+            regex = re.compile('(<[^>]*[a-zA-Z]+\s*=\s*"[0-9]+)( [a-zA-Z]+="\w+"|/?>)'),
+            processexps='\\1"\\2'),
     )
 
-# strip out a set of nuisance html attributes that can mess up rendering in RSS feeds
+# Strip out HTML attributes - from Arc90's readability.js
 bad_attrs = ['width','height','style','[-a-z]*color','background[-a-z]*']
 single_quoted = "'[^']+'"
 double_quoted = '"[^"]+"'
 non_space = '[^ "\'>]+'
-htmlstrip = re.compile("<" # open
-                       "([^>]+) " # prefix
-                       "(?:%s) *" % ('|'.join(bad_attrs),) + # undesirable attributes
-                       '= *(?:%s|%s|%s)' % (non_space, single_quoted, double_quoted) + # value
-                       "([^>]*)"  # postfix
-                       ">"        # end
+htmlstrip = re.compile("<" # Open tag
+                       "([^>]+) " # starting prefix
+                       "(?:%s) *" % ('|'.join(bad_attrs),) + # remove bad attributes
+                       '= *(?:%s|%s|%s)' % (non_space, single_quoted, double_quoted) + # needed value
+                       "([^>]*)"  # starting postfix
+                       ">"        # end of tag
                        , re.I)

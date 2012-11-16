@@ -31,6 +31,9 @@ def create_doc(content, base_href):
 
 # Verify if the provided HTML has 'Content-Type' as HTML
 def isValidhtml(url):
+    """
+    Verify valid HTML content
+    """
 
     if url is None:
         return False
@@ -70,9 +73,9 @@ def normalize_spaces(s):
     characters with a single space"""
     return ' '.join(s.split())
 
-def _remove_crufty_html(content):
-    for processexps in lousy_regexps:
-        content = processexps.sub(content)
+def _clean_crufty_html(content):
+    for Regexps in crufty_regexps_html:
+        content = Regexps.sub(content)
     return content
 
 def clean_attributes(html):
@@ -97,7 +100,7 @@ def snippet(node,n=40):
 def parse(raw_content, base_href=None, notify=lambda *args: None):
     try:
         content = UnicodeDammit(raw_content, is_html=True).markup
-        cleaned = _remove_crufty_html(content)
+        cleaned = _clean_crufty_html(content)
         return create_doc(cleaned, base_href)
     except HTMLParser.HTMLParseError, e:
         notify("parsing failed:", e)

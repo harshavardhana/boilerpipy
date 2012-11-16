@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-version = '0.1'
+version = '0.2beta'
 
 setup(
     name='extractor',
@@ -8,7 +8,7 @@ setup(
     description=('Readability extractor in Python'),
     author='Harshavardhana',
     author_email='harsha@harshavardhana.net',
-    url='https://github.com/harshavardhana/extractor.git',
+    url='https://github.com/harshavardhana/boilerpipy.git',
     license='Apache',
     platforms=['any'],
     classifiers=[
