@@ -3,8 +3,8 @@ Extractor
 
 Readability extractor in Python, closest port to latest 1.7.1 readability.js
   
-  Copyright (C) 2010 Sharmila Gopirajan - Original Author
-  Copyright (C) 2012 Harshavardhana - Current Maintainer
+    Copyright (C) 2010 Sharmila Gopirajan - Original Author
+    Copyright (C) 2012 Harshavardhana - Current Maintainer/Author
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
