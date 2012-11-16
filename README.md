@@ -1,7 +1,7 @@
 Boilerpipy
 ======
 
-Readability/Boilerpipe extractor in Python, closest port to latest 1.7.1 readability.js
+Readability/Boilerpipe extractor in Python, closest port to latest Arc90's readability.js - 1.7.1
   
     Copyright (C) 2010 Sharmila Gopirajan - Original Author
     Copyright (C) 2012 Harshavardhana - Current Maintainer/Author
