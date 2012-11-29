@@ -6,10 +6,10 @@ from lxml.etree import tostring, tounicode, ParserError, iterwalk
 from lxml.html.clean import Cleaner
 import lxml.html as html
 from lxml.etree import tostring
-from urlparse2 import urlparse
 import httplib
 
 from expressions import *
+from compat import compat_urllib_parse_urlparse
 
 try:
     from bs4 import UnicodeDammit
@@ -39,14 +39,14 @@ def isValidhtml(url):
         return False
 
     try:
-        parsed = urlparse(url)
+        parsed = compat_urllib_parse_urlparse(url)
         h = httplib.HTTPConnection(parsed.netloc)
         h.request('HEAD', parsed.path)
         response = h.getresponse()
 
         # Handle response status 301
         if response.status/100 == 3 and response.getheader('Location'):
-            parsed = urlparse(response.getheader('Location'))
+            parsed = compat_urllib_parse_urlparse(response.getheader('Location'))
             h = httplib.HTTPConnection(parsed.netloc)
             h.request('HEAD', parsed.path)
             response = h.getresponse()
