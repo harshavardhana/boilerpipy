@@ -8,7 +8,7 @@ class Unparseable(object):
             pass
         if isinstance(error, type(ParseError)):
             pass
-        if isinstance(error, type(StandardError)):
+        if isinstance(error, type(Exception)):
             pass
         if isinstance(error, type(AttributeError)):
             pass

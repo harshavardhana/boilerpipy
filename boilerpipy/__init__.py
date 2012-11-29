@@ -2,16 +2,16 @@
 import re
 
 from collections import defaultdict
-import HTMLParser
 
 from lxml.etree import tostring, tounicode, ParserError, iterwalk
 from lxml.html.clean import Cleaner
 import lxml.html as html
 from lxml.etree import tostring
 
-from expressions import *
-from common import *
-from error import *
+from boilerpy.expressions import *
+from boilerpy.common import *
+from boilerpy.error import *
+from boilerpy.compat import compat_str
 
 import logging
 FORMAT = '%(asctime)-15s %(message)s'
@@ -31,7 +31,7 @@ class Extractor:
     def __init__(self, input, notify=None, **options):
         self.input = input.replace('\r','')
         self.options = defaultdict(lambda: None)
-        for k, v in options.items():
+        for k, v in list(options.items()):
             self.options[k] = v
         self.notify = notify or logger.debug
         self.html = None
@@ -47,7 +47,7 @@ class Extractor:
                               page_structure=False, processing_instructions=True, embedded=False,
                               frames=False, forms=False, annoying_tags=False, remove_tags=None,
                               remove_unknown_tags=False, safe_attrs_only=False)
-            if isinstance(self.input, unicode):
+            if isinstance(self.input, compat_str):
                 # Work around: ValueError: Unicode strings with encoding
                 # declaration are not supported by lxml
                 self.input = self.input.encode('utf-8')
@@ -111,7 +111,7 @@ class Extractor:
                     continue # try again
                 else:
                     return cleaned_article
-        except (StandardError, ParserError), e:
+        except (Exception, ParserError) as e:
             logger.info('error getting summary: %s' % e)
             return None
 
@@ -149,7 +149,7 @@ class Extractor:
         return output
 
     def select_best_node(self, nodes):
-        sorted_nodes = sorted(nodes.values(), key=lambda x: x['content_score'], reverse=True)
+        sorted_nodes = sorted(list(nodes.values()), key=lambda x: x['content_score'], reverse=True)
         logger.debug("Top 5 nodes:")
         for node in sorted_nodes[:5]:
             elem = node['elem']
@@ -201,7 +201,7 @@ class Extractor:
 
         # Scale the final nodes score based on link density. Good content should have a
         # relatively small link density (5% or less) and be mostly unaffected by this operation.
-        for elem, node in nodes.items():
+        for elem, node in list(nodes.items()):
             link_density = self.get_link_density(elem)
             node['content_score'] *= (1 - link_density)
             if node['content_score'] > 0:
@@ -257,7 +257,7 @@ class Extractor:
         for elem in self.html.iter():
             if elem.tag.lower() == "div":
                 # transform <div>s that do not contain other block elements into <p>s
-                if not REGEXPS['divToPElements'].search(unicode(''.join(map(tostring, list(elem))))):
+                if not REGEXPS['divToPElements'].search(compat_str(''.join(map(tostring, list(elem))))):
                     logger.debug("Altering div(#%s.%s) to p" % (elem.get('id', ''), elem.get('class', '')))
                     elem.tag = "p"
 

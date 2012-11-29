@@ -1,3 +1,5 @@
+import sys
+
 try:
     import urllib.request as compat_urllib_request
 except ImportError: # Python 2
@@ -22,3 +24,39 @@ try:
     import html.parser as compat_html_parser
 except ImportError: # Python 2
     import HTMLParser as compat_html_parser
+
+try:
+    import http.client as compat_http_client
+except ImportError: # Python 2
+    import httplib as compat_http_client
+
+try:
+    compat_str = unicode # Python 2
+except NameError:
+    compat_str = str
+
+try:
+    compat_chr = unichr # Python 2
+except NameError:
+    compat_chr = chr
+
+def preferredencoding():
+    """Get preferred encoding.
+
+    Returns the best encoding scheme for the system, based on
+    locale.getpreferredencoding() and some further tweaks.
+    """
+    try:
+        pref = locale.getpreferredencoding()
+        u'TEST'.encode(pref)
+    except:
+        pref = 'UTF-8'
+    return pref
+
+if sys.version_info < (3,0):
+    def compat_print(s):
+        print(s.encode(preferredencoding(), 'xmlcharrefreplace'))
+else:
+    def compat_print(s):
+        assert type(s) == type(u'')
+        print(s)

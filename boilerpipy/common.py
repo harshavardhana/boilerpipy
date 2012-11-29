@@ -5,22 +5,22 @@ from lxml.etree import tostring, tounicode, ParserError, iterwalk
 from lxml.html.clean import Cleaner
 import lxml.html as html
 from lxml.etree import tostring
-import httplib
 
-from expressions import *
-from compat import (compat_urllib_parse_urlparse,
-                    compat_html_parser)
+from boilerpy.expressions import *
+from boilerpy.compat import (compat_urllib_parse_urlparse,
+                             compat_html_parser, compat_str,
+                             compat_http_client)
 
 try:
     from bs4 import UnicodeDammit
 except:
-    print "Please install beautifulsoup4 --> easy_install -U beautifulsoup4"
+    print("Please install beautifulsoup4 --> easy_install -U beautifulsoup4")
     sys.exit(1)
 
 def create_doc(content, base_href):
     # Work around: ValueError: Unicode strings with encoding
     # declaration are not supported by lxml
-    if isinstance(content, unicode):
+    if isinstance(content, compat_str):
         content.encode('utf-8')
     html_doc = html.fromstring(content, parser=html.HTMLParser(recover=True, remove_comments=True, no_network=True))
     if base_href:
@@ -40,14 +40,14 @@ def isValidhtml(url):
 
     try:
         parsed = compat_urllib_parse_urlparse(url)
-        h = httplib.HTTPConnection(parsed.netloc)
+        h = compat_http_client.HTTPConnection(parsed.netloc)
         h.request('HEAD', parsed.path)
         response = h.getresponse()
 
         # Handle response status 301
         if response.status/100 == 3 and response.getheader('Location'):
             parsed = compat_urllib_parse_urlparse(response.getheader('Location'))
-            h = httplib.HTTPConnection(parsed.netloc)
+            h = compat_http_client.HTTPConnection(parsed.netloc)
             h.request('HEAD', parsed.path)
             response = h.getresponse()
             if response.status/100 == 3:
@@ -64,7 +64,7 @@ def isValidhtml(url):
 
         return False
     except Exception as err:
-        print("Header returned error: %s, skip not a valid HTML" % err)
+        print(("Header returned error: %s, skip not a valid HTML" % err))
         return False
 
 # helpers for parsing
@@ -92,9 +92,9 @@ def describe(node):
 def snippet(node,n=40):
     """ return one-liner snippet of the text under the node """
     txt = node.text_content()
-    txt = u' '.join(txt.split())
+    txt = compat_str(' '.join(txt.split()))
     if len(txt)>n:
-        txt = txt[:n] + u"..."
+        txt = txt[:n] + compat_str("...")
     return txt
 
 def parse(raw_content, base_href=None, notify=lambda *args: None):
@@ -102,19 +102,19 @@ def parse(raw_content, base_href=None, notify=lambda *args: None):
         content = UnicodeDammit(raw_content, is_html=True).markup
         cleaned = _clean_crufty_html(content)
         return create_doc(cleaned, base_href)
-    except compat_html_parser.HTMLParseError, e:
+    except compat_html_parser.HTMLParseError as e:
         notify("parsing failed:", e)
     raise Unparseable()
 
 def get_title(doc):
-    title = unicode(getattr(doc.find('.//title'), 'text', ''))
+    title = compat_str(getattr(doc.find('.//title'), 'text', ''))
     if not title:
         return None
     return normalize_spaces(title)
 
 def get_body(doc):
     [ elem.drop_tree() for elem in doc.xpath('.//script | .//link | .//style') ]
-    raw_html = unicode(tostring(doc.body is not None or doc is not None))
+    raw_html = compat_str(tostring(doc.body is not None or doc is not None))
     cleaned = clean_attributes(raw_html)
     try:
         return cleaned
