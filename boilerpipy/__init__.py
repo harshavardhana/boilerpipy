@@ -104,7 +104,7 @@ class Extractor:
                     pass
 
                 cleaned_article = self.sanitize(article, nodes)
-                at_acceptable_length = len(cleaned_article or '') >= (self.options['retry_length'] or self.RETRY_LENGTH)
+                at_acceptable_length = len(cleaned_article) >= self.RETRY_LENGTH
 
                 if single_pass and not at_acceptable_length:
                     single_pass = False
