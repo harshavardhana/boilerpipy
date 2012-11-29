@@ -17,3 +17,8 @@ try:
     from urllib.parse import urlparse as compat_urllib_parse_urlparse
 except ImportError: # Python 2
     from urlparse2 import urlparse as compat_urllib_parse_urlparse
+
+try:
+    import html.parser as compat_html_parser
+except ImportError: # Python 2
+    import HTMLParser as compat_html_parser

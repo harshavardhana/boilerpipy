@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import sys
-import HTMLParser
 
 from lxml.etree import tostring, tounicode, ParserError, iterwalk
 from lxml.html.clean import Cleaner
@@ -9,7 +8,8 @@ from lxml.etree import tostring
 import httplib
 
 from expressions import *
-from compat import compat_urllib_parse_urlparse
+from compat import (compat_urllib_parse_urlparse,
+                    compat_html_parser)
 
 try:
     from bs4 import UnicodeDammit
@@ -102,7 +102,7 @@ def parse(raw_content, base_href=None, notify=lambda *args: None):
         content = UnicodeDammit(raw_content, is_html=True).markup
         cleaned = _clean_crufty_html(content)
         return create_doc(cleaned, base_href)
-    except HTMLParser.HTMLParseError, e:
+    except compat_html_parser.HTMLParseError, e:
         notify("parsing failed:", e)
     raise Unparseable()
 
@@ -118,6 +118,6 @@ def get_body(doc):
     cleaned = clean_attributes(raw_html)
     try:
         return cleaned
-    except HTMLParser.HTMLParseError:
+    except compat_html_parser.HTMLParseError:
         error("cleansing broke html content: %s\n---------\n%s" % (raw_html,cleaned))
         return raw_html
