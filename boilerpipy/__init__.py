@@ -8,10 +8,10 @@ from lxml.html.clean import Cleaner
 import lxml.html as html
 from lxml.etree import tostring
 
-from boilerpy.expressions import *
-from boilerpy.common import *
-from boilerpy.error import *
-from boilerpy.compat import compat_str
+from .expressions import *
+from .common import *
+from .error import *
+from .compat import compat_str
 
 import logging
 FORMAT = '%(asctime)-15s %(message)s'

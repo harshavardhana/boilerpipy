@@ -6,8 +6,8 @@ from lxml.html.clean import Cleaner
 import lxml.html as html
 from lxml.etree import tostring
 
-from boilerpy.expressions import *
-from boilerpy.compat import (compat_urllib_parse_urlparse,
+from .expressions import *
+from .compat import (compat_urllib_parse_urlparse,
                              compat_html_parser, compat_str,
                              compat_http_client)
 
