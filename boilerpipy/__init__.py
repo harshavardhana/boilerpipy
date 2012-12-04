@@ -11,7 +11,7 @@ from lxml.etree import tostring
 from .expressions import *
 from .common import *
 from .error import *
-from .compat import compat_str
+from .compat import *
 
 import logging
 FORMAT = '%(asctime)-15s %(message)s'

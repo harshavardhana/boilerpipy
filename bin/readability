@@ -6,9 +6,8 @@ import chardet
 
 from optparse import OptionParser
 
-from boilerpipy import Extractor
-from boilerpipy.common import isValidhtml
-from boilerpipy.compat import compat_urllib_request
+from boilerpipy import (Extractor, isValidhtml,
+                        compat_urllib_request)
 
 def main():
     parser = OptionParser(usage="%prog: [options] [file]")
