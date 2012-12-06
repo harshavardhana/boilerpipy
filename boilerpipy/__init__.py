@@ -28,7 +28,7 @@ def setLogLevel(level):
     logger.setLevel(level)
 
 class Extractor:
-    def __init__(self, input, notify=None, **options):
+    def __init__(self, input, notify=None, tag=None, **options):
         self.input = input.replace('\r','')
         self.options = defaultdict(lambda: None)
         for k, v in list(options.items()):
@@ -38,6 +38,7 @@ class Extractor:
         self.TEXT_LENGTH_THRESHOLD = 25
         self.RETRY_LENGTH = 250
         setLogLevel(self.options.get('loglevel'))
+        self.tag = tag
 
     def normalize_html(self, force=False):
         # Use lxml 'Cleaner' class to normalize html to a feasible value
@@ -59,6 +60,12 @@ class Extractor:
 
     def title(self):
         return get_title(self.normalize_html())
+
+    def query(self):
+        if self.tag is None:
+            raise ValueError('Please provide tag value before calling this function')
+
+        return get_queried_tags(self.normalize_html(), self.tag)
 
     def extracted(self):
         try:

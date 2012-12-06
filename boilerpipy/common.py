@@ -114,10 +114,24 @@ def get_title(doc):
 
 def get_body(doc):
     [ elem.drop_tree() for elem in doc.xpath('.//script | .//link | .//style') ]
-    raw_html = compat_str(tostring(doc.body is not None or doc is not None))
+
+    if doc.body is not None:
+        raw_html = compat_str(tostring(doc.body))
+    elif doc is not None:
+        raw_html = compat_str(tostring(doc))
+
     cleaned = clean_attributes(raw_html)
     try:
         return cleaned
     except compat_html_parser.HTMLParseError:
         error("cleansing broke html content: %s\n---------\n%s" % (raw_html,cleaned))
         return raw_html
+
+def get_queried_tags(doc, tag):
+    [ elem.drop_tree() for elem in doc.xpath('.//script | .//link | .//style') ]
+
+    queried_results = []
+    for i in doc.findall('.//%s' % tag):
+        queried_results.append(compat_str(tostring(i).strip()))
+
+    return queried_results
