@@ -1,11 +1,11 @@
-from distutils.core import setup
+from setuptools import setup
 
 version = '0.2beta'
 
 setup(
     name='boilerpipy',
     version=version,
-    description=('Readability/Boilerpipe extractor in Python'),
+    description='Readability/Boilerpipe extractor in Python',
     author='Harshavardhana',
     author_email='harsha@harshavardhana.net',
     url='https://github.com/harshavardhana/boilerpipy.git',
@@ -20,5 +20,5 @@ setup(
     ],
     packages=['boilerpipy'],
     scripts=['bin/readability'],
-    requires=['lxml', 'beautifulsoup4', 'urlparse2'],
+    install_requires=['lxml', 'beautifulsoup4', 'urlparse2'],
 )
