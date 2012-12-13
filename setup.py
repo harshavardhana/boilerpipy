@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '0.2beta'
+version = '0.2beta2'
 
 setup(
     name='boilerpipy',
@@ -19,6 +19,6 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     packages=['boilerpipy'],
-    scripts=['bin/readability'],
+    scripts=['bin/readability', 'bin/query'],
     install_requires=['lxml', 'beautifulsoup4', 'urlparse2'],
 )
