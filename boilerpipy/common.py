@@ -21,7 +21,7 @@ def create_doc(content, base_href):
     # Work around: ValueError: Unicode strings with encoding
     # declaration are not supported by lxml
     if isinstance(content, compat_str):
-        content.encode('utf-8')
+        content = content.encode('utf-8')
     html_doc = html.fromstring(content, parser=html.HTMLParser(recover=True, remove_comments=True, no_network=True))
     if base_href:
         html_doc.make_links_absolute(base_href, resolve_base_href=True)
