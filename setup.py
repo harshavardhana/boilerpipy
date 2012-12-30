@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '0.2beta2'
+version = '0.2.1beta'
 
 setup(
     name='boilerpipy',
