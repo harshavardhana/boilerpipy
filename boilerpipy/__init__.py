@@ -19,7 +19,7 @@ logging.basicConfig(format=FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger('extractor')
 # Default
 logger.setLevel(logging.INFO)
-__version__ = "0.2beta"
+__version__ = "0.2.1beta"
 __license__ = "Apache 2.0"
 
 def setLogLevel(level):
