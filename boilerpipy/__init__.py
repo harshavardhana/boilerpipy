@@ -23,7 +23,7 @@ __version__ = "0.2.1beta"
 __license__ = "Apache 2.0"
 
 def setLogLevel(level):
-    if type(level) is not type(0):
+    if not isinstance(level, int):
         raise ValueError
     logger.setLevel(level)
 
