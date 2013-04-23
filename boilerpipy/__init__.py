@@ -6,7 +6,6 @@ from collections import defaultdict
 from lxml.etree import tostring, tounicode, ParserError, iterwalk
 from lxml.html.clean import Cleaner
 import lxml.html as html
-from lxml.etree import tostring
 
 from .expressions import *
 from .common import *
@@ -97,18 +96,11 @@ class Extractor:
                             article = self.html
 
                 content_scores = []
-                best_score = 0.0
-                new_node = None
 
                 for x in nodes:
                     if nodes[x]['content_score'] < 0:
                         continue
                     content_scores.append(nodes[x]['content_score'])
-
-                try:
-                    best_score = sorted(content_scores)[len(content_scores)-1:][0]
-                except Exception as e:
-                    pass
 
                 cleaned_article = self.sanitize(article, nodes)
                 at_acceptable_length = len(cleaned_article) >= self.RETRY_LENGTH
@@ -147,7 +139,7 @@ class Extractor:
 
                 if node_length > 80 and link_density < 0.25:
                     append = True
-                elif node_length < 80 and link_density == 0 and re.search('\.( |$)', node_content):
+                elif node_length < 80 and link_density == 0 and re.search(r'\.( |$)', node_content):
                     append = True
 
             if append:

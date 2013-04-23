@@ -53,7 +53,7 @@ def preferredencoding():
         pref = 'UTF-8'
     return pref
 
-if sys.version_info < (3,0):
+if sys.version_info < (3, 0):
     def compat_print(s):
         print(s.encode(preferredencoding(), 'xmlcharrefreplace'))
 else:

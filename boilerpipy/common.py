@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 import sys
 
-from lxml.etree import tostring, tounicode, ParserError, iterwalk
-from lxml.html.clean import Cleaner
-import lxml.html as html
 from lxml.etree import tostring
+import lxml.html as html
 
-from .expressions import *
+from .expressions import htmlstrip, crufty_regexps_html
 from .compat import (compat_urllib_parse_urlparse,
                              compat_html_parser, compat_str,
                              compat_http_client)
+from .error import Unparseable
 
 try:
     from bs4 import UnicodeDammit
@@ -30,7 +29,7 @@ def create_doc(content, base_href):
     return html_doc
 
 # Verify if the provided HTML has 'Content-Type' as HTML
-def isValidhtml(url):
+def isvalidhtml(url):
     """
     Verify valid HTML content
     """
@@ -74,14 +73,14 @@ def normalize_spaces(s):
     return ' '.join(s.split())
 
 def _clean_crufty_html(content):
-    for Regexps in crufty_regexps_html:
-        content = Regexps.sub(content)
+    for regexps in crufty_regexps_html:
+        content = regexps.sub(content)
     return content
 
-def clean_attributes(html):
-    while htmlstrip.search(html):
-        html = htmlstrip.sub('<\\1\\2>', html)
-    return html
+def clean_attributes(raw_html):
+    while htmlstrip.search(raw_html):
+        raw_html = htmlstrip.sub('<\\1\\2>', raw_html)
+    return raw_html
 
 def describe(node):
     if not hasattr(node, 'tag'):
@@ -89,7 +88,7 @@ def describe(node):
     return "%s#%s.%s" % (
         node.tag, node.get('id', ''), node.get('class',''))
 
-def snippet(node,n=40):
+def snippet(node, n=40):
     """ return one-liner snippet of the text under the node """
     txt = node.text_content()
     txt = compat_str(' '.join(txt.split()))
@@ -120,11 +119,11 @@ def get_body(doc):
     elif doc is not None:
         raw_html = compat_str(tostring(doc))
 
-    cleaned = clean_attributes(raw_html)
     try:
+        cleaned = clean_attributes(raw_html)
         return cleaned
     except compat_html_parser.HTMLParseError:
-        error("cleansing broke html content: %s\n---------\n%s" % (raw_html,cleaned))
+        print ("cleansing broke html content: %s\n---------\n%s" % (raw_html, cleaned))
         return raw_html
 
 def get_queried_tags(doc, tag):

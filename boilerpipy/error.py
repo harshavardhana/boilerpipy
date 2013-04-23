@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from lxml.etree import ParseError
 
-class Unparseable(object):
+class Unparseable(BaseException):
 
     def __init__(self, error):
         if isinstance(error, type(ValueError)):

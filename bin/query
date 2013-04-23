@@ -6,7 +6,7 @@ import chardet
 
 from optparse import OptionParser
 
-from boilerpipy import (Extractor, isValidhtml,
+from boilerpipy import (Extractor, isvalidhtml,
                         compat_urllib_request)
 
 def main():
@@ -26,7 +26,7 @@ def main():
 
     url = None
     if options.url:
-        if not isValidhtml(options.url):
+        if not isvalidhtml(options.url):
             print "Unrecognized URL, please provide a content-type of text/html"
             sys.exit(255)
 
