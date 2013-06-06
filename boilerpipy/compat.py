@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import sys
+import locale
 
 try:
     import urllib.request as compat_urllib_request
@@ -31,14 +33,14 @@ except ImportError: # Python 2
     import httplib as compat_http_client
 
 try:
-    compat_str = unicode # Python 2
+    COMPAT_STR = unicode # Python 2
 except NameError:
-    compat_str = str
+    COMPAT_STR = str
 
 try:
-    compat_chr = unichr # Python 2
+    COMPAT_CHR = unichr # Python 2
 except NameError:
-    compat_chr = chr
+    COMPAT_CHR = chr
 
 def preferredencoding():
     """Get preferred encoding.
@@ -49,7 +51,7 @@ def preferredencoding():
     try:
         pref = locale.getpreferredencoding()
         u'TEST'.encode(pref)
-    except:
+    except SyntaxError:
         pref = 'UTF-8'
     return pref
 

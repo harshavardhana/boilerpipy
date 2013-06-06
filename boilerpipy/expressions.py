@@ -20,7 +20,20 @@ REGEXPS = {
     'skipFootnoteLink': re.compile(r'^\s*(\[?[a-z0-9]{1,2}\]?|^|edit|citation needed)\s*$', re.I),
 }
 
-class Regexps():
+# Strip out HTML attributes - from Arc90's readability.js
+BADATTRS = ['width', 'height', 'style', '[-a-z]*color', 'background[-a-z]*']
+SINGLEQUOTED = "'[^']+'"
+DOUBLEQUOTED = '"[^"]+"'
+NONSPACE = '[^ "\'>]+'
+HTMLSTRIP = re.compile("<" # Open tag
+                       "([^>]+) " # starting prefix
+                       "(?:%s) *" % ('|'.join(BADATTRS),) + # remove bad attributes
+                       '= *(?:%s|%s|%s)' % (NONSPACE, SINGLEQUOTED, DOUBLEQUOTED) + # needed value
+                       "([^>]*)"  # starting postfix
+                       ">"        # end of tag
+                       , re.I)
+
+class Regexps:
     """
     Class to remove HTML cruft
     """
@@ -30,11 +43,13 @@ class Regexps():
         self.processexps = processexps
 
     def sub(self, content):
-        """ substitute expressions """
+        """
+        Substitute regex expressions
+        """
         return self.regex.sub(self.processexps, content)
 
 ### Cruft in html from Arc90's readability.js
-crufty_regexps_html = (
+CRUFTY_REGEXPS_HTML = (
     Regexps('javascript',
             regex=re.compile(r'<script.*?</script[^>]*>', re.DOTALL | re.IGNORECASE),
             processexps=''),
@@ -51,16 +66,3 @@ crufty_regexps_html = (
             regex = re.compile(r'(<[^>]*[a-zA-Z]+\s*=\s*"[0-9]+)( [a-zA-Z]+="\w+"|/?>)'),
             processexps='\\1"\\2'),
     )
-
-# Strip out HTML attributes - from Arc90's readability.js
-bad_attrs = ['width', 'height', 'style', '[-a-z]*color', 'background[-a-z]*']
-single_quoted = "'[^']+'"
-double_quoted = '"[^"]+"'
-non_space = '[^ "\'>]+'
-htmlstrip = re.compile("<" # Open tag
-                       "([^>]+) " # starting prefix
-                       "(?:%s) *" % ('|'.join(bad_attrs),) + # remove bad attributes
-                       '= *(?:%s|%s|%s)' % (non_space, single_quoted, double_quoted) + # needed value
-                       "([^>]*)"  # starting postfix
-                       ">"        # end of tag
-                       , re.I)

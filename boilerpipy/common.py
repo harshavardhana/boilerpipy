@@ -4,10 +4,10 @@ import sys
 from lxml.etree import tostring
 import lxml.html as html
 
-from .expressions import htmlstrip, crufty_regexps_html
+from .expressions import HTMLSTRIP, CRUFTY_REGEXPS_HTML
 from .compat import (compat_urllib_parse_urlparse,
-                             compat_html_parser, compat_str,
-                             compat_http_client)
+                     compat_html_parser, COMPAT_STR,
+                     compat_http_client)
 from .error import Unparseable
 
 try:
@@ -19,7 +19,7 @@ except:
 def create_doc(content, base_href):
     # Work around: ValueError: Unicode strings with encoding
     # declaration are not supported by lxml
-    if isinstance(content, compat_str):
+    if isinstance(content, COMPAT_STR):
         content = content.encode('utf-8')
     html_doc = html.fromstring(content, parser=html.HTMLParser(recover=True, remove_comments=True, no_network=True))
     if base_href:
@@ -73,13 +73,13 @@ def normalize_spaces(s):
     return ' '.join(s.split())
 
 def _clean_crufty_html(content):
-    for regexps in crufty_regexps_html:
+    for regexps in CRUFTY_REGEXPS_HTML:
         content = regexps.sub(content)
     return content
 
 def clean_attributes(raw_html):
-    while htmlstrip.search(raw_html):
-        raw_html = htmlstrip.sub('<\\1\\2>', raw_html)
+    while HTMLSTRIP.search(raw_html):
+        raw_html = HTMLSTRIP.sub('<\\1\\2>', raw_html)
     return raw_html
 
 def describe(node):
@@ -91,9 +91,9 @@ def describe(node):
 def snippet(node, n=40):
     """ return one-liner snippet of the text under the node """
     txt = node.text_content()
-    txt = compat_str(' '.join(txt.split()))
+    txt = COMPAT_STR(' '.join(txt.split()))
     if len(txt)>n:
-        txt = txt[:n] + compat_str("...")
+        txt = txt[:n] + COMPAT_STR("...")
     return txt
 
 def parse(raw_content, base_href=None, notify=lambda *args: None):
@@ -106,7 +106,7 @@ def parse(raw_content, base_href=None, notify=lambda *args: None):
     raise Unparseable()
 
 def get_title(doc):
-    title = compat_str(getattr(doc.find('.//title'), 'text', ''))
+    title = COMPAT_STR(getattr(doc.find('.//title'), 'text', ''))
     if not title:
         return None
     return normalize_spaces(title)
@@ -115,9 +115,9 @@ def get_body(doc):
     [ elem.drop_tree() for elem in doc.xpath('.//script | .//link | .//style') ]
 
     if doc.body is not None:
-        raw_html = compat_str(tostring(doc.body))
+        raw_html = COMPAT_STR(tostring(doc.body))
     elif doc is not None:
-        raw_html = compat_str(tostring(doc))
+        raw_html = COMPAT_STR(tostring(doc))
 
     try:
         cleaned = clean_attributes(raw_html)
@@ -131,6 +131,6 @@ def get_queried_tags(doc, tag):
 
     queried_results = []
     for i in doc.findall('.//%s' % tag):
-        queried_results.append(compat_str(tostring(i).strip()))
+        queried_results.append(COMPAT_STR(tostring(i).strip()))
 
     return queried_results

@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 from lxml.etree import ParseError
 
-class Unparseable(BaseException):
-
+class Unparseable(Exception):
+    """
+    Local exception handler
+    """
     def __init__(self, error):
+        # pylint fixes
+        super(Unparseable, self).__init__(error)
+
         if isinstance(error, type(ValueError)):
             pass
         if isinstance(error, type(ParseError)):
-            pass
-        if isinstance(error, type(Exception)):
             pass
         if isinstance(error, type(AttributeError)):
             pass
@@ -17,4 +20,3 @@ class Unparseable(BaseException):
         if isinstance(error, type(SyntaxError)):
             pass
         # Control shouldn't reach here
-        pass
