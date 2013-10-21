@@ -47,7 +47,7 @@ class Extractor:
                               page_structure=False, processing_instructions=True, embedded=False,
                               frames=False, forms=False, annoying_tags=False, remove_tags=None,
                               remove_unknown_tags=False, safe_attrs_only=False)
-            if isinstance(self.input, compat_str):
+            if isinstance(self.input, COMPAT_STR):
                 # Work around: ValueError: Unicode strings with encoding
                 # declaration are not supported by lxml
                 self.input = self.input.encode('utf-8')
@@ -256,7 +256,7 @@ class Extractor:
         for elem in self.html.iter():
             if elem.tag.lower() == "div":
                 # transform <div>s that do not contain other block elements into <p>s
-                if not REGEXPS['divToPElements'].search(compat_str(''.join(map(tostring, list(elem))))):
+                if not REGEXPS['divToPElements'].search(COMPAT_STR(''.join(map(tostring, list(elem))))):
                     logger.debug("Altering div(#%s.%s) to p" % (elem.get('id', ''), elem.get('class', '')))
                     elem.tag = "p"
 
