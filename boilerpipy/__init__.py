@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import re
+import sys
 
 from collections import defaultdict
 
-from lxml.etree import tostring, tounicode, ParserError, iterwalk
+from lxml.etree import (tostring, tounicode, ParserError,
+                        iterwalk, XMLSyntaxError)
 from lxml.html.clean import Cleaner
 import lxml.html as html
 
@@ -18,7 +20,7 @@ logging.basicConfig(format=FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger('extractor')
 # Default
 logger.setLevel(logging.INFO)
-__version__ = "0.2.1beta"
+__version__ = "0.2.2"
 __license__ = "Apache 2.0"
 
 def setLogLevel(level):
@@ -43,15 +45,18 @@ class Extractor:
         # Use lxml 'Cleaner' class to normalize html to a feasible value
         if force or self.html is None:
             cleaner = Cleaner(scripts=True, javascript=True, comments=True,
-                              style=True, links=True, meta=False, add_nofollow=False,
-                              page_structure=False, processing_instructions=True, embedded=False,
-                              frames=False, forms=False, annoying_tags=False, remove_tags=None,
-                              remove_unknown_tags=False, safe_attrs_only=False)
+                              style=True, links=True, meta=False,
+                              add_nofollow=False, page_structure=False,
+                              processing_instructions=True, embedded=False,
+                              frames=False, forms=False, annoying_tags=False,
+                              remove_tags=None, remove_unknown_tags=False,
+                              safe_attrs_only=False)
             if isinstance(self.input, COMPAT_STR):
                 # Work around: ValueError: Unicode strings with encoding
                 # declaration are not supported by lxml
                 self.input = self.input.encode('utf-8')
-            self.html = parse(cleaner.clean_html(self.input), self.options['url'], notify=self.notify)
+            self.html = parse(cleaner.clean_html(self.input),
+                              self.options['url'], notify=self.notify)
         return self.html
 
     def content(self):
@@ -71,13 +76,15 @@ class Extractor:
             single_pass = True
             while True:
                 self.normalize_html(True)
-                [i.drop_tree() for i in self.tags(self.html, 'script', 'style', 'noscript')]
+                [i.drop_tree() for i in self.tags(self.html, 'script',
+                                                  'style', 'noscript')]
 
                 if single_pass:
                     self.remove_unlikely_nodes()
 
                 self.transform_misused_divs_into_paragraphs()
-                nodes = self.score_paragraphs(self.options.get('min_text_length', self.TEXT_LENGTH_THRESHOLD))
+                nodes = self.score_paragraphs(self.options.get('min_text_length',
+                                                               self.TEXT_LENGTH_THRESHOLD))
 
                 best_node = self.select_best_node(nodes)
                 if best_node:
@@ -110,12 +117,16 @@ class Extractor:
                     continue # try again
                 else:
                     return cleaned_article
-        except (Exception, ParserError) as e:
+        except ParserError as e:
             logger.info('error getting summary: %s' % e)
             return None
 
-        except lxml.etree.XMLSyntaxError:
+        except XMLSyntaxError as e:
             logger.info('error getting summary: %s' % e)
+            return None
+
+        except:
+            logger.info('unexpected error: %s' % sys.exc_info()[0])
             return None
 
     def get_article(self, nodes, best_node):
@@ -148,16 +159,20 @@ class Extractor:
         return output
 
     def select_best_node(self, nodes):
-        sorted_nodes = sorted(list(nodes.values()), key=lambda x: x['content_score'], reverse=True)
+        sorted_nodes = sorted(list(nodes.values()),
+                              key=lambda x: x['content_score'], reverse=True)
         logger.debug("Top 5 nodes:")
         for node in sorted_nodes[:5]:
             elem = node['elem']
-            logger.debug("Node %s with score %s '%s...'" % (describe(elem), node['content_score'], snippet(elem)))
+            logger.debug("Node %s with score %s '%s...'" % (describe(elem),
+                                                            node['content_score'],
+                                                            snippet(elem)))
 
         if len(sorted_nodes) == 0:
             return None
         best_node = sorted_nodes[0]
-        logger.debug("Best node %s with score %s" % (describe(best_node['elem']), best_node['content_score']))
+        logger.debug("Best node %s with score %s" % (describe(best_node['elem']),
+                                                     best_node['content_score']))
         return best_node
 
     def get_link_density(self, elem):
@@ -167,7 +182,8 @@ class Extractor:
 
     def score_paragraphs(self, min_text_length):
         nodes = {}
-        logger.debug(str([describe(node) for node in self.tags(self.html, "div")]))
+        logger.debug(str([describe(node) for node in self.tags(self.html,
+                                                               "div")]))
         elems = self.tags(self.html, "div", "p", "td", 'li', "a")
 
         for elem in elems:
@@ -204,10 +220,11 @@ class Extractor:
             link_density = self.get_link_density(elem)
             node['content_score'] *= (1 - link_density)
             if node['content_score'] > 0:
-                logger.debug("node %s scored %s (linkd: %s) '%s'" % (describe(elem),
-                                                                        node['content_score'],
-                                                                        link_density,
-                                                                        snippet(elem,30)))
+                logger.debug("node %s scored %s"
+                             "(linkd: %s) '%s'" % (describe(elem),
+                                                   node['content_score'],
+                                                   link_density,
+                                                   snippet(elem, 30)))
 
         return nodes
 
@@ -240,7 +257,7 @@ class Extractor:
             content_score -= 3
         elif tag == "th":
             content_score -= 5
-        return { 'content_score': content_score, 'elem': elem }
+        return {'content_score': content_score, 'elem': elem}
 
     def remove_unlikely_nodes(self):
         remove_list = []
@@ -248,7 +265,7 @@ class Extractor:
         for action, elem in context:
             s = "%s%s" % (elem.get('class', ''), elem.get('id', ''))
             if REGEXPS['unlikelyNodes'].search(s) and (not REGEXPS['okMaybeItsANode'].search(s)) and elem.tag != 'body':
-                logger.debug("Removing unlikely node - %s" % (s,))
+                logger.debug("Removing unlikely node - %s" % s)
                 remove_list.append(elem)
         [e.drop_tree() for e in remove_list if e.tag != 'html']
 
@@ -257,7 +274,8 @@ class Extractor:
             if elem.tag.lower() == "div":
                 # transform <div>s that do not contain other block elements into <p>s
                 if not REGEXPS['divToPElements'].search(COMPAT_STR(''.join(map(tostring, list(elem))))):
-                    logger.debug("Altering div(#%s.%s) to p" % (elem.get('id', ''), elem.get('class', '')))
+                    logger.debug("Altering div(#%s.%s) to p" % (elem.get('id', ''),
+                                                                elem.get('class', '')))
                     elem.tag = "p"
 
     def tags(self, node, *tag_names):
@@ -319,7 +337,8 @@ class Extractor:
                 elif counts["input"] > (counts["p"] / 3):
                     reason = "less than 3x <p>s than <input>s"
                     to_remove = True
-                elif content_length < (self.options.get('min_text_length', self.TEXT_LENGTH_THRESHOLD)) and (counts["img"] == 0):
+                elif content_length < (self.options.get('min_text_length',
+                                                        self.TEXT_LENGTH_THRESHOLD)) and (counts["img"] == 0):
                     reason = "too short a content length without a single image"
                     to_remove = True
                 elif weight < 25 and link_density > 0.2:
@@ -342,7 +361,8 @@ class Extractor:
                     to_remove = True
                 if to_remove:
                     logger.debug("Conditionally cleaned %s#%s.%s with weight %s and content score %s because it has %s." %
-                               (el.tag, el.get('id',''), el.get('class', ''), weight, content_score, reason))
-                    logger.debug("pname %s pweight %s" %(pname, pweight))
+                               (el.tag, el.get('id', ''), el.get('class', ''),
+                                weight, content_score, reason))
+                    logger.debug("pname %s pweight %s" % (pname, pweight))
                     el.drop_tree()
         return tounicode(node)

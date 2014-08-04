@@ -3,7 +3,6 @@ import sys
 import logging
 import chardet
 
-
 from optparse import OptionParser
 
 from boilerpipy import (Extractor, isvalidhtml,
@@ -12,7 +11,8 @@ from boilerpipy import (Extractor, isvalidhtml,
 def main():
     parser = OptionParser(usage="%prog: [options] [file]")
     parser.add_option('-u', '--url', help="use URL instead of a local file")
-    parser.add_option('-d', help="enable debug", action="store_true", default=False, dest="debug")
+    parser.add_option('-d', help="enable debug", action="store_true",
+                      default=False, dest="debug")
     (options, args) = parser.parse_args()
 
     if not options.url:
@@ -26,7 +26,7 @@ def main():
     url = None
     if options.url:
         if not isvalidhtml(options.url):
-            print "Unrecognized URL, please provide a content-type of text/html"
+            print ("Unrecognized URL, please provide a content-type of text/html")
             sys.exit(255)
 
         url = compat_urllib_request.urlopen(options.url)
@@ -40,10 +40,10 @@ def main():
         out = Extractor(content, loglevel=loglevel).extracted()
         if out is None:
             raise
-        print out.encode('utf-8','ignore')
+        print (out.encode('utf-8','ignore'))
 
     except Exception as err:
-        print "Error in printing the extracted html () %s" % err
+        print ("Error in printing the extracted html () %s" % err)
 
     finally:
         url.close()

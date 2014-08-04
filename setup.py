@@ -3,7 +3,7 @@ from setuptools import setup
 with open('README.md') as file:
     long_description = file.read()
 
-version = '0.2.1'
+version = '0.2.2'
 
 setup(
     name='boilerpipy',

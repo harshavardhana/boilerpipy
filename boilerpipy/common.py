@@ -21,7 +21,11 @@ def create_doc(content, base_href):
     # declaration are not supported by lxml
     if isinstance(content, COMPAT_STR):
         content = content.encode('utf-8')
-    html_doc = html.fromstring(content, parser=html.HTMLParser(recover=True, remove_comments=True, no_network=True))
+
+    html_parser = html.HTMLParser(recover=True, remove_comments=True,
+                                  no_network=True)
+    html_doc = html.fromstring(content, parser=html_parser)
+
     if base_href:
         html_doc.make_links_absolute(base_href, resolve_base_href=True)
     else:
@@ -86,7 +90,7 @@ def describe(node):
     if not hasattr(node, 'tag'):
         return "[text]"
     return "%s#%s.%s" % (
-        node.tag, node.get('id', ''), node.get('class',''))
+        node.tag, node.get('id', ''), node.get('class', ''))
 
 def snippet(node, n=40):
     """ return one-liner snippet of the text under the node """
@@ -112,7 +116,7 @@ def get_title(doc):
     return normalize_spaces(title)
 
 def get_body(doc):
-    [ elem.drop_tree() for elem in doc.xpath('.//script | .//link | .//style') ]
+    [elem.drop_tree() for elem in doc.xpath('.//script | .//link | .//style')]
 
     if doc.body is not None:
         raw_html = COMPAT_STR(tostring(doc.body))
@@ -123,11 +127,12 @@ def get_body(doc):
         cleaned = clean_attributes(raw_html)
         return cleaned
     except compat_html_parser.HTMLParseError:
-        print ("cleansing broke html content: %s\n---------\n%s" % (raw_html, cleaned))
+        print ("cleansing broke html content: %s\n---------\n%s" % (raw_html,
+                                                                    cleaned))
         return raw_html
 
 def get_queried_tags(doc, tag):
-    [ elem.drop_tree() for elem in doc.xpath('.//script | .//link | .//style') ]
+    [elem.drop_tree() for elem in doc.xpath('.//script | .//link | .//style')]
 
     queried_results = []
     for i in doc.findall('.//%s' % tag):
