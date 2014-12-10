@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('README.md') as file:
     long_description = file.read()
 
-version = '0.2.2'
+version = '0.2.3'
 
 setup(
     name='boilerpipy',
@@ -21,7 +21,7 @@ setup(
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    packages=['boilerpipy'],
+    packages=find_packages(),
     scripts=['bin/readability', 'bin/query'],
     install_requires=['lxml', 'beautifulsoup4', 'urlparse2'],
     long_description=long_description,
