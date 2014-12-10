@@ -9,10 +9,10 @@ from lxml.etree import (tostring, tounicode, ParserError,
 from lxml.html.clean import Cleaner
 import lxml.html as html
 
-from .expressions import *
-from .common import *
-from .error import *
-from .compat import *
+from expressions import *
+from common import *
+from error import *
+from compat import *
 
 import logging
 FORMAT = '%(asctime)-15s %(message)s'
