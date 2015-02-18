@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
-with open('README.md') as file:
+with open('README.rst') as file:
     long_description = file.read()
 
-version = '0.2.3'
+version = '0.2.5'
 
 setup(
     name='boilerpipy',
