@@ -23,7 +23,7 @@ def create_doc(content, base_href):
         content = content.encode('utf-8')
 
     html_parser = html.HTMLParser(recover=True, remove_comments=True,
-                                  no_network=True)
+                                  no_network=True, encoding="utf-8")
     html_doc = html.fromstring(content, parser=html_parser)
 
     if base_href:
