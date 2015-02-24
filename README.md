@@ -20,3 +20,6 @@ limitations under the License.
 [![Downloads](https://pypip.in/download/boilerpipy/badge.svg?style=flat)](https://pypi.python.org/pypi/boilerpipy/)
 [![Wheel Status](https://pypip.in/wheel/boilerpipy/badge.svg?style=flat)](https://pypi.python.org/pypi/boilerpipy/)
 [![License](https://pypip.in/license/boilerpipy/badge.svg?style=flat)](https://pypi.python.org/pypi/boilerpipy/)
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/harshavardhana/boilerpipy/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
