@@ -21,5 +21,3 @@ limitations under the License.
 [![Version](https://img.shields.io/pypi/v/boilerpipy.svg)](https://pypi.python.org/pypi/boilerpipy/)
 [![License](https://img.shields.io/pypi/l/boilerpipy.svg)](https://pypi.python.org/pypi/boilerpipy/)
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/harshavardhana/boilerpipy/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
