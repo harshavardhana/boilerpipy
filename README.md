@@ -17,9 +17,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-[![Downloads](https://pypip.in/download/boilerpipy/badge.svg?style=flat)](https://pypi.python.org/pypi/boilerpipy/)
-[![Wheel Status](https://pypip.in/wheel/boilerpipy/badge.svg?style=flat)](https://pypi.python.org/pypi/boilerpipy/)
-[![License](https://pypip.in/license/boilerpipy/badge.svg?style=flat)](https://pypi.python.org/pypi/boilerpipy/)
+[![Downloads](https://img.shields.io/pypi/dm/boilerpipy.svg)](https://pypi.python.org/pypi/boilerpipy/)
+[![Version](https://img.shields.io/pypi/v/boilerpipy.svg)](https://pypi.python.org/pypi/boilerpipy/)
+[![License](https://img.shields.io/pypi/l/boilerpipy.svg)](https://pypi.python.org/pypi/boilerpipy/)
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/harshavardhana/boilerpipy/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
