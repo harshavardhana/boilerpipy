@@ -4,11 +4,11 @@ import sys
 from lxml.etree import tostring
 import lxml.html as html
 
-from expressions import HTMLSTRIP, CRUFTY_REGEXPS_HTML
-from compat import (compat_urllib_parse_urlparse,
+from .expressions import HTMLSTRIP, CRUFTY_REGEXPS_HTML
+from .compat import (compat_urllib_parse_urlparse,
                      compat_html_parser, COMPAT_STR,
                      compat_http_client)
-from error import Unparseable
+from .error import Unparseable
 
 try:
     from bs4 import UnicodeDammit
