@@ -30,7 +30,7 @@ def setLogLevel(level):
 
 class Extractor:
     def __init__(self, input, notify=None, tag=None, **options):
-        self.input = input.replace('\r','')
+        self.input = input
         self.options = defaultdict(lambda: None)
         for k, v in list(options.items()):
             self.options[k] = v
@@ -55,6 +55,7 @@ class Extractor:
                 # Work around: ValueError: Unicode strings with encoding
                 # declaration are not supported by lxml
                 self.input = self.input.encode('utf-8')
+            self.input = self.input.replace(b'\r', b'')
             self.html = parse(cleaner.clean_html(self.input),
                               self.options['url'], notify=self.notify)
         return self.html
@@ -273,7 +274,7 @@ class Extractor:
         for elem in self.html.iter():
             if elem.tag.lower() == "div":
                 # transform <div>s that do not contain other block elements into <p>s
-                if not REGEXPS['divToPElements'].search(COMPAT_STR(''.join(map(tostring, list(elem))))):
+                if not REGEXPS['divToPElements'].search(COMPAT_STR(''.join(map(tounicode, list(elem))))):
                     logger.debug("Altering div(#%s.%s) to p" % (elem.get('id', ''),
                                                                 elem.get('class', '')))
                     elem.tag = "p"
