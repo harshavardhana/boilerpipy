@@ -38,7 +38,8 @@ class Extractor:
         self.html = None
         self.TEXT_LENGTH_THRESHOLD = 25
         self.RETRY_LENGTH = 250
-        setLogLevel(self.options.get('loglevel'))
+        if 'loglevel' in options:
+            setLogLevel(self.options['loglevel'])
         self.tag = tag
 
     def normalize_html(self, force=False):
